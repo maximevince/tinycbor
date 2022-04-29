@@ -252,12 +252,12 @@ CBOR_INLINE_API uint8_t *_cbor_encoder_get_buffer_pointer(const CborEncoder *enc
     return encoder->data.ptr;
 }
 
-CBOR_INLINE_API size_t vk_cbor_encoder_get_buffer_size(const CborEncoder *encoder, const uint8_t *buffer)
+CBOR_INLINE_API size_t dkpf_cbor_encoder_get_buffer_size(const CborEncoder *encoder, const uint8_t *buffer)
 {
     return (size_t)(encoder->data.ptr - buffer);
 }
 
-CBOR_INLINE_API size_t cbor_encoder_get_extra_bytes_needed(const CborEncoder *encoder)
+CBOR_INLINE_API size_t dkpf_cbor_encoder_get_extra_bytes_needed(const CborEncoder *encoder)
 {
     return encoder->end ? 0 : (size_t)encoder->data.bytes_needed;
 }
@@ -307,11 +307,11 @@ CBOR_INLINE_API bool dkpf_cbor_value_is_container(const CborValue *it)
 CBOR_API CborError dkpf_cbor_value_enter_container(const CborValue *it, CborValue *recursed);
 CBOR_API CborError dkpf_cbor_value_leave_container(CborValue *it, const CborValue *recursed);
 
-CBOR_PRIVATE_API uint64_t _cbor_value_decode_int64_internal(const CborValue *value);
-CBOR_INLINE_API uint64_t _cbor_value_extract_int64_helper(const CborValue *value)
+CBOR_PRIVATE_API uint64_t _dkpf_cbor_value_decode_int64_internal(const CborValue *value);
+CBOR_INLINE_API uint64_t _dkpf_cbor_value_extract_int64_helper(const CborValue *value)
 {
     return value->flags & CborIteratorFlag_IntegerValueTooLarge ?
-                _cbor_value_decode_int64_internal(value) : value->extra;
+           _dkpf_cbor_value_decode_int64_internal(value) : value->extra;
 }
 
 CBOR_INLINE_API bool dkpf_cbor_value_is_valid(const CborValue *value)
@@ -356,21 +356,21 @@ CBOR_INLINE_API bool dkpf_cbor_value_is_negative_integer(const CborValue *value)
 CBOR_INLINE_API CborError dkpf_cbor_value_get_raw_integer(const CborValue *value, uint64_t *result)
 {
     assert(dkpf_cbor_value_is_integer(value));
-    *result = _cbor_value_extract_int64_helper(value);
+    *result = _dkpf_cbor_value_extract_int64_helper(value);
     return CborNoError;
 }
 
 CBOR_INLINE_API CborError dkpf_cbor_value_get_uint64(const CborValue *value, uint64_t *result)
 {
     assert(dkpf_cbor_value_is_unsigned_integer(value));
-    *result = _cbor_value_extract_int64_helper(value);
+    *result = _dkpf_cbor_value_extract_int64_helper(value);
     return CborNoError;
 }
 
 CBOR_INLINE_API CborError dkpf_cbor_value_get_int64(const CborValue *value, int64_t *result)
 {
     assert(dkpf_cbor_value_is_integer(value));
-    *result = (int64_t) _cbor_value_extract_int64_helper(value);
+    *result = (int64_t) _dkpf_cbor_value_extract_int64_helper(value);
     if (value->flags & CborIteratorFlag_NegativeInteger)
         *result = -*result - 1;
     return CborNoError;
@@ -379,7 +379,7 @@ CBOR_INLINE_API CborError dkpf_cbor_value_get_int64(const CborValue *value, int6
 CBOR_INLINE_API CborError dkpf_cbor_value_get_int(const CborValue *value, int *result)
 {
     assert(dkpf_cbor_value_is_integer(value));
-    *result = (int) _cbor_value_extract_int64_helper(value);
+    *result = (int) _dkpf_cbor_value_extract_int64_helper(value);
     if (value->flags & CborIteratorFlag_NegativeInteger)
         *result = -*result - 1;
     return CborNoError;
@@ -397,7 +397,7 @@ CBOR_INLINE_API bool dkpf_cbor_value_is_tag(const CborValue *value)
 CBOR_INLINE_API CborError dkpf_cbor_value_get_tag(const CborValue *value, CborTag *result)
 {
     assert(dkpf_cbor_value_is_tag(value));
-    *result = _cbor_value_extract_int64_helper(value);
+    *result = _dkpf_cbor_value_extract_int64_helper(value);
     return CborNoError;
 }
 CBOR_API CborError dkpf_cbor_value_skip_tag(CborValue *it);
@@ -414,17 +414,17 @@ CBOR_INLINE_API CborError cbor_value_get_string_length(const CborValue *value, s
     assert(dkpf_cbor_value_is_byte_string(value) || dkpf_cbor_value_is_text_string(value));
     if (!dkpf_cbor_value_is_length_known(value))
         return CborErrorUnknownLength;
-    v = _cbor_value_extract_int64_helper(value);
+    v = _dkpf_cbor_value_extract_int64_helper(value);
     *length = (size_t)v;
     if (*length != v)
         return CborErrorDataTooLarge;
     return CborNoError;
 }
 
-CBOR_PRIVATE_API CborError _cbor_value_copy_string(const CborValue *value, void *buffer,
-                                                   size_t *buflen, CborValue *next);
-CBOR_PRIVATE_API CborError _cbor_value_dup_string(const CborValue *value, void **buffer,
-                                                  size_t *buflen, CborValue *next);
+CBOR_PRIVATE_API CborError _dkpf_cbor_value_copy_string(const CborValue *value, void *buffer,
+                                                        size_t *buflen, CborValue *next);
+CBOR_PRIVATE_API CborError _dkpf_cbor_value_dup_string(const CborValue *value, void **buffer,
+                                                       size_t *buflen, CborValue *next);
 
 CBOR_API CborError dkpf_cbor_value_calculate_string_length(const CborValue *value, size_t *length);
 
@@ -432,26 +432,26 @@ CBOR_INLINE_API CborError dkpf_cbor_value_copy_text_string(const CborValue *valu
                                                            size_t *buflen, CborValue *next)
 {
     assert(dkpf_cbor_value_is_text_string(value));
-    return _cbor_value_copy_string(value, buffer, buflen, next);
+    return _dkpf_cbor_value_copy_string(value, buffer, buflen, next);
 }
 CBOR_INLINE_API CborError dkpf_cbor_value_copy_byte_string(const CborValue *value, uint8_t *buffer,
                                                            size_t *buflen, CborValue *next)
 {
     assert(dkpf_cbor_value_is_byte_string(value));
-    return _cbor_value_copy_string(value, buffer, buflen, next);
+    return _dkpf_cbor_value_copy_string(value, buffer, buflen, next);
 }
 
 CBOR_INLINE_API CborError dkpf_cbor_value_dup_text_string(const CborValue *value, char **buffer,
                                                           size_t *buflen, CborValue *next)
 {
     assert(dkpf_cbor_value_is_text_string(value));
-    return _cbor_value_dup_string(value, (void **)buffer, buflen, next);
+    return _dkpf_cbor_value_dup_string(value, (void **) buffer, buflen, next);
 }
 CBOR_INLINE_API CborError dkpf_cbor_value_dup_byte_string(const CborValue *value, uint8_t **buffer,
                                                           size_t *buflen, CborValue *next)
 {
     assert(dkpf_cbor_value_is_byte_string(value));
-    return _cbor_value_dup_string(value, (void **)buffer, buflen, next);
+    return _dkpf_cbor_value_dup_string(value, (void **) buffer, buflen, next);
 }
 
 CBOR_API CborError dkpf_cbor_value_text_string_equals(const CborValue *value, const char *string, bool *result);
@@ -468,7 +468,7 @@ CBOR_INLINE_API CborError dkpf_cbor_value_get_array_length(const CborValue *valu
     assert(dkpf_cbor_value_is_array(value));
     if (!dkpf_cbor_value_is_length_known(value))
         return CborErrorUnknownLength;
-    v = _cbor_value_extract_int64_helper(value);
+    v = _dkpf_cbor_value_extract_int64_helper(value);
     *length = (size_t)v;
     if (*length != v)
         return CborErrorDataTooLarge;
@@ -481,7 +481,7 @@ CBOR_INLINE_API CborError dkpf_cbor_value_get_map_length(const CborValue *value,
     assert(dkpf_cbor_value_is_map(value));
     if (!dkpf_cbor_value_is_length_known(value))
         return CborErrorUnknownLength;
-    v = _cbor_value_extract_int64_helper(value);
+    v = _dkpf_cbor_value_extract_int64_helper(value);
     *length = (size_t)v;
     if (*length != v)
         return CborErrorDataTooLarge;
@@ -502,7 +502,7 @@ CBOR_INLINE_API CborError dkpf_cbor_value_get_float(const CborValue *value, floa
     uint32_t data;
     assert(dkpf_cbor_value_is_float(value));
     assert(value->flags & CborIteratorFlag_IntegerValueTooLarge);
-    data = (uint32_t)_cbor_value_decode_int64_internal(value);
+    data = (uint32_t) _dkpf_cbor_value_decode_int64_internal(value);
     memcpy(result, &data, sizeof(*result));
     return CborNoError;
 }
@@ -514,7 +514,7 @@ CBOR_INLINE_API CborError dkpf_cbor_value_get_double(const CborValue *value, dou
     uint64_t data;
     assert(dkpf_cbor_value_is_double(value));
     assert(value->flags & CborIteratorFlag_IntegerValueTooLarge);
-    data = _cbor_value_decode_int64_internal(value);
+    data = _dkpf_cbor_value_decode_int64_internal(value);
     memcpy(result, &data, sizeof(*result));
     return CborNoError;
 }

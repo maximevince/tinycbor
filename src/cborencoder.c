@@ -99,14 +99,14 @@
  * that returns CborErrorOutOfMemory. CborEncoder functions will not overrun
  * the buffer, but will instead count how many more bytes are needed to
  * complete the encoding. At the end, you can obtain that count by calling
- * cbor_encoder_get_extra_bytes_needed().
+ * dkpf_cbor_encoder_get_extra_bytes_needed().
  *
  * \section1 Finalizing the encoding
  *
  * Once all items have been appended and the containers have all been properly
  * closed, the user-supplied buffer will contain the CBOR stream and may be
  * immediately used. To obtain the size of the buffer, call
- * vk_cbor_encoder_get_buffer_size() with the original buffer pointer.
+ * dkpf_cbor_encoder_get_buffer_size() with the original buffer pointer.
  *
  * The example below illustrates how one can encode an item with error checking
  * and then pass on the buffer for network sending.
@@ -129,7 +129,7 @@
  *      if (err)
  *          return err;
  *
- *      size_t len = vk_cbor_encoder_get_buffer_size(&encoder, buf);
+ *      size_t len = dkpf_cbor_encoder_get_buffer_size(&encoder, buf);
  *      send_payload(buf, len);
  *      return CborNoError;
  * \endcode
@@ -168,14 +168,14 @@
  *         err = dkpf_cbor_encoder_close_container_checked(&encoder, &arrayEncoder);
  *         cbor_assert(!err);         // shouldn't fail!
  *
- *         more_bytes = cbor_encoder_get_extra_bytes_needed(encoder);
+ *         more_bytes = dkpf_cbor_encoder_get_extra_bytes_needed(encoder);
  *         if (more_size) {
  *             // buffer wasn't big enough, try again
  *             size += more_bytes;
  *             continue;
  *         }
  *
- *         *bufsize = vk_cbor_encoder_get_buffer_size(encoder, buf);
+ *         *bufsize = dkpf_cbor_encoder_get_buffer_size(encoder, buf);
  *         return buf;
  *     }
  *  error:
@@ -608,7 +608,7 @@ CborError dkpf_cbor_encoder_close_container(CborEncoder *encoder, const CborEnco
  */
 
 /**
- * \fn size_t vk_cbor_encoder_get_buffer_size(const CborEncoder *encoder, const uint8_t *buffer)
+ * \fn size_t dkpf_cbor_encoder_get_buffer_size(const CborEncoder *encoder, const uint8_t *buffer)
  *
  * Returns the total size of the buffer starting at \a buffer after the
  * encoding finished without errors. The \a encoder and \a buffer arguments
@@ -616,16 +616,16 @@ CborError dkpf_cbor_encoder_close_container(CborEncoder *encoder, const CborEnco
  *
  * If the encoding process had errors, the return value of this function is
  * meaningless. If the only errors were CborErrorOutOfMemory, instead use
- * cbor_encoder_get_extra_bytes_needed() to find out by how much to grow the
+ * dkpf_cbor_encoder_get_extra_bytes_needed() to find out by how much to grow the
  * buffer before encoding again.
  *
  * See \ref CborEncoding for an example of using this function.
  *
- * \sa dkpf_cbor_encoder_init(), cbor_encoder_get_extra_bytes_needed(), CborEncoding
+ * \sa dkpf_cbor_encoder_init(), dkpf_cbor_encoder_get_extra_bytes_needed(), CborEncoding
  */
 
 /**
- * \fn size_t cbor_encoder_get_extra_bytes_needed(const CborEncoder *encoder)
+ * \fn size_t dkpf_cbor_encoder_get_extra_bytes_needed(const CborEncoder *encoder)
  *
  * Returns how many more bytes the original buffer supplied to
  * dkpf_cbor_encoder_init() needs to be extended by so that no CborErrorOutOfMemory
@@ -639,7 +639,7 @@ CborError dkpf_cbor_encoder_close_container(CborEncoder *encoder, const CborEnco
  *
  * See \ref CborEncoding for an example of using this function.
  *
- * \sa dkpf_cbor_encoder_init(), vk_cbor_encoder_get_buffer_size(), CborEncoding
+ * \sa dkpf_cbor_encoder_init(), dkpf_cbor_encoder_get_buffer_size(), CborEncoding
  */
 
 /** @} */

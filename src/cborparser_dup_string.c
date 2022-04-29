@@ -94,13 +94,13 @@
  *
  * \sa cbor_value_get_text_string_chunk(), dkpf_cbor_value_copy_byte_string(), dkpf_cbor_value_dup_text_string()
  */
-CborError _cbor_value_dup_string(const CborValue *value, void **buffer, size_t *buflen, CborValue *next)
+CborError _dkpf_cbor_value_dup_string(const CborValue *value, void **buffer, size_t *buflen, CborValue *next)
 {
     CborError err;
     cbor_assert(buffer);
     cbor_assert(buflen);
     *buflen = SIZE_MAX;
-    err = _cbor_value_copy_string(value, NULL, buflen, NULL);
+    err = _dkpf_cbor_value_copy_string(value, NULL, buflen, NULL);
     if (err)
         return err;
 
@@ -110,7 +110,7 @@ CborError _cbor_value_dup_string(const CborValue *value, void **buffer, size_t *
         /* out of memory */
         return CborErrorOutOfMemory;
     }
-    err = _cbor_value_copy_string(value, *buffer, buflen, next);
+    err = _dkpf_cbor_value_copy_string(value, *buffer, buflen, next);
     if (err) {
         free(*buffer);
         return err;

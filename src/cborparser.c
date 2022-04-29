@@ -364,7 +364,7 @@ static CborError advance_internal(CborValue *it)
  * point values (SinglePrecisionFloat == Value32Bit and DoublePrecisionFloat ==
  * Value64Bit).
  */
-uint64_t _cbor_value_decode_int64_internal(const CborValue *value)
+uint64_t _dkpf_cbor_value_decode_int64_internal(const CborValue *value)
 {
     cbor_assert(value->flags & CborIteratorFlag_IntegerValueTooLarge ||
                 value->type == CborFloatType || value->type == CborDoubleType);
@@ -505,7 +505,7 @@ static CborError advance_recursive(CborValue *it, int nestingLevel)
 
     if (!dkpf_cbor_value_is_container(it)) {
         size_t len = SIZE_MAX;
-        return _cbor_value_copy_string(it, NULL, &len, it);
+        return _dkpf_cbor_value_copy_string(it, NULL, &len, it);
     }
 
     /* map or array */
@@ -838,7 +838,7 @@ CborError dkpf_cbor_value_get_int64_checked(const CborValue *value, int64_t *res
 {
     uint64_t v;
     cbor_assert(dkpf_cbor_value_is_integer(value));
-    v = _cbor_value_extract_int64_helper(value);
+    v = _dkpf_cbor_value_extract_int64_helper(value);
 
     /* Check before converting, as the standard says (C11 6.3.1.3 paragraph 3):
      * "[if] the new type is signed and the value cannot be represented in it; either the
@@ -878,7 +878,7 @@ CborError dkpf_cbor_value_get_int_checked(const CborValue *value, int *result)
 {
     uint64_t v;
     cbor_assert(dkpf_cbor_value_is_integer(value));
-    v = _cbor_value_extract_int64_helper(value);
+    v = _dkpf_cbor_value_extract_int64_helper(value);
 
     /* Check before converting, as the standard says (C11 6.3.1.3 paragraph 3):
      * "[if] the new type is signed and the value cannot be represented in it; either the
@@ -988,7 +988,7 @@ CborError dkpf_cbor_value_get_int_checked(const CborValue *value, int *result)
 CborError dkpf_cbor_value_calculate_string_length(const CborValue *value, size_t *length)
 {
     *length = SIZE_MAX;
-    return _cbor_value_copy_string(value, NULL, length, NULL);
+    return _dkpf_cbor_value_copy_string(value, NULL, length, NULL);
 }
 
 static inline void prepare_string_iteration(CborValue *it)
@@ -1207,8 +1207,8 @@ static CborError iterate_string_chunks(const CborValue *value, char *buffer, siz
  * \sa cbor_value_get_byte_string_chunk(), dkpf_cbor_value_dup_text_string(), dkpf_cbor_value_copy_text_string(), cbor_value_get_string_length(), dkpf_cbor_value_calculate_string_length()
  */
 
-CborError _cbor_value_copy_string(const CborValue *value, void *buffer,
-                                 size_t *buflen, CborValue *next)
+CborError _dkpf_cbor_value_copy_string(const CborValue *value, void *buffer,
+                                       size_t *buflen, CborValue *next)
 {
     bool copied_all;
     CborError err = iterate_string_chunks(value, (char*)buffer, buflen, &copied_all, next,
