@@ -45,12 +45,12 @@
  * TinyCBOR provides functions for pull-based stream parsing of a CBOR-encoded
  * payload. The main data type for the parsing is a CborValue, which behaves
  * like an iterator and can be used to extract the encoded data. It is first
- * initialized with a call to cbor_parser_init() and is usually used to extract
+ * initialized with a call to dkpf_cbor_parser_init() and is usually used to extract
  * exactly one item, most often an array or map.
  *
- * Nested CborValue objects can be parsed using cbor_value_enter_container().
- * Each call to cbor_value_enter_container() must be matched by a call to
- * cbor_value_leave_container(), with the exact same parameters.
+ * Nested CborValue objects can be parsed using dkpf_cbor_value_enter_container().
+ * Each call to dkpf_cbor_value_enter_container() must be matched by a call to
+ * dkpf_cbor_value_leave_container(), with the exact same parameters.
  *
  * The example below initializes a CborParser object, begins the parsing with a
  * CborValue and decodes a single integer:
@@ -61,8 +61,8 @@
  *     CborParser parser;
  *     CborValue value;
  *     int result;
- *     cbor_parser_init(buffer, len, 0, &parser, &value);
- *     cbor_value_get_int(&value, &result);
+ *     dkpf_cbor_parser_init(buffer, len, 0, &parser, &value);
+ *     dkpf_cbor_value_get_int(&value, &result);
  *     return result;
  * }
  * \endcode
@@ -78,10 +78,10 @@
  *     CborParser parser;
  *     CborValue value;
  *     int result;
- *     if (cbor_parser_init(buffer, len, 0, &parser, &value) != CborNoError)
+ *     if (dkpf_cbor_parser_init(buffer, len, 0, &parser, &value) != CborNoError)
  *         return 0;
- *     if (!cbor_value_is_integer(&value) ||
- *             cbor_value_get_int(&value, &result) != CborNoError)
+ *     if (!dkpf_cbor_value_is_integer(&value) ||
+ *             dkpf_cbor_value_get_int(&value, &result) != CborNoError)
  *         return 0;
  *     return result;
  * }
@@ -94,7 +94,7 @@
  * The code above does not execute a range-check either: it is possible that
  * the value decoded from the CBOR stream encodes a number larger than what can
  * be represented in a variable of type \c{int}. If detecting that case is
- * important, the code should call cbor_value_get_int_checked() instead.
+ * important, the code should call dkpf_cbor_value_get_int_checked() instead.
  *
  * <h3 class="groupheader">Memory and parsing constraints</h3>
  *
@@ -115,7 +115,7 @@
  * behavior if called after an error has been reported, and may crash.
  *
  * Some functions are also documented to have preconditions, like
- * cbor_value_get_int() requiring that the input be an integral value.
+ * dkpf_cbor_value_get_int() requiring that the input be an integral value.
  * Violation of preconditions also results in undefined behavior and the
  * program may crash.
  */
@@ -389,7 +389,7 @@ uint64_t _cbor_value_decode_int64_internal(const CborValue *value)
  * threads iterating at the same time, but the object can be copied so multiple
  * threads can iterate.
  */
-CborError cbor_parser_init(const uint8_t *buffer, size_t size, uint32_t flags, CborParser *parser, CborValue *it)
+CborError dkpf_cbor_parser_init(const uint8_t *buffer, size_t size, uint32_t flags, CborParser *parser, CborValue *it)
 {
     memset(parser, 0, sizeof(*parser));
     parser->end = buffer + size;
@@ -402,25 +402,25 @@ CborError cbor_parser_init(const uint8_t *buffer, size_t size, uint32_t flags, C
 }
 
 /**
- * \fn bool cbor_value_at_end(const CborValue *it)
+ * \fn bool dkpf_cbor_value_at_end(const CborValue *it)
  *
  * Returns true if \a it has reached the end of the iteration, usually when
  * advancing after the last item in an array or map.
  *
  * In the case of the outermost CborValue object, this function returns true
  * after decoding a single element. A pointer to the first byte of the
- * remaining data (if any) can be obtained with cbor_value_get_next_byte().
+ * remaining data (if any) can be obtained with dkpf_cbor_value_get_next_byte().
  *
- * \sa cbor_value_advance(), cbor_value_is_valid(), cbor_value_get_next_byte()
+ * \sa dkpf_cbor_value_advance(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_get_next_byte()
  */
 
 /**
- * \fn const uint8_t *cbor_value_get_next_byte(const CborValue *it)
+ * \fn const uint8_t *dkpf_cbor_value_get_next_byte(const CborValue *it)
  *
  * Returns a pointer to the next byte that would be decoded if this CborValue
  * object were advanced.
  *
- * This function is useful if cbor_value_at_end() returns true for the
+ * This function is useful if dkpf_cbor_value_at_end() returns true for the
  * outermost CborValue: the pointer returned is the first byte of the data
  * remaining in the buffer, if any. Code can decide whether to begin decoding a
  * new CBOR data stream from this point, or parse some other data appended to
@@ -431,17 +431,17 @@ CborError cbor_parser_init(const uint8_t *buffer, size_t size, uint32_t flags, C
  * Note that the error recovery is not precise and the pointer may not indicate
  * the exact byte containing bad data.
  *
- * \sa cbor_value_at_end()
+ * \sa dkpf_cbor_value_at_end()
  */
 
 /**
- * \fn bool cbor_value_is_valid(const CborValue *it)
+ * \fn bool dkpf_cbor_value_is_valid(const CborValue *it)
  *
  * Returns true if the iterator \a it contains a valid value. Invalid iterators
  * happen when iteration reaches the end of a container (see \ref
- * cbor_value_at_end()) or when a search function resulted in no matches.
+ * dkpf_cbor_value_at_end()) or when a search function resulted in no matches.
  *
- * \sa cbor_value_advance(), cbor_value_at_end(), cbor_value_get_type()
+ * \sa dkpf_cbor_value_advance(), dkpf_cbor_value_at_end(), dkpf_cbor_value_get_type()
  */
 
 /**
@@ -458,17 +458,17 @@ CborError cbor_parser_init(const uint8_t *buffer, size_t size, uint32_t flags, C
  *   \li arrays and maps contain the number of elements they are reported to have;
  * \endlist
  *
- * For further checks, see cbor_value_validate().
+ * For further checks, see dkpf_cbor_value_validate().
  *
  * This function has the same timing and memory requirements as
- * cbor_value_advance().
+ * dkpf_cbor_value_advance().
  *
- * \sa cbor_value_validate(), cbor_value_advance()
+ * \sa dkpf_cbor_value_validate(), dkpf_cbor_value_advance()
  */
-CborError cbor_value_validate_basic(const CborValue *it)
+CborError dkpf_cbor_value_validate_basic(const CborValue *it)
 {
     CborValue value = *it;
-    return cbor_value_advance(&value);
+    return dkpf_cbor_value_advance(&value);
 }
 
 /**
@@ -482,11 +482,11 @@ CborError cbor_value_validate_basic(const CborValue *it)
  * that it runs in constant time (O(1)).
  *
  * If the caller is not able to determine whether the type is fixed or not, code
- * can use the cbor_value_advance() function instead.
+ * can use the dkpf_cbor_value_advance() function instead.
  *
- * \sa cbor_value_at_end(), cbor_value_advance(), cbor_value_enter_container(), cbor_value_leave_container()
+ * \sa dkpf_cbor_value_at_end(), dkpf_cbor_value_advance(), dkpf_cbor_value_enter_container(), dkpf_cbor_value_leave_container()
  */
-CborError cbor_value_advance_fixed(CborValue *it)
+CborError dkpf_cbor_value_advance_fixed(CborValue *it)
 {
     cbor_assert(it->type != CborInvalidType);
     cbor_assert(is_fixed_type(it->type));
@@ -503,7 +503,7 @@ static CborError advance_recursive(CborValue *it, int nestingLevel)
     if (is_fixed_type(it->type))
         return advance_internal(it);
 
-    if (!cbor_value_is_container(it)) {
+    if (!dkpf_cbor_value_is_container(it)) {
         size_t len = SIZE_MAX;
         return _cbor_value_copy_string(it, NULL, &len, it);
     }
@@ -512,21 +512,21 @@ static CborError advance_recursive(CborValue *it, int nestingLevel)
     if (nestingLevel == 0)
         return CborErrorNestingTooDeep;
 
-    err = cbor_value_enter_container(it, &recursed);
+    err = dkpf_cbor_value_enter_container(it, &recursed);
     if (err)
         return err;
-    while (!cbor_value_at_end(&recursed)) {
+    while (!dkpf_cbor_value_at_end(&recursed)) {
         err = advance_recursive(&recursed, nestingLevel - 1);
         if (err)
             return err;
     }
-    return cbor_value_leave_container(it, &recursed);
+    return dkpf_cbor_value_leave_container(it, &recursed);
 }
 
 
 /**
  * Advances the CBOR value \a it by one element, skipping over containers.
- * Unlike cbor_value_advance_fixed(), this function can be called on a CBOR
+ * Unlike dkpf_cbor_value_advance_fixed(), this function can be called on a CBOR
  * value of any type. However, if the type is a container (map or array) or a
  * string with a chunked payload, this function will not run in constant time
  * and will recurse into itself (it will run on O(n) time for the number of
@@ -536,9 +536,9 @@ static CborError advance_recursive(CborValue *it, int nestingLevel)
  * The number of recursions can be limited at compile time to avoid stack
  * exhaustion in constrained systems.
  *
- * \sa cbor_value_at_end(), cbor_value_advance_fixed(), cbor_value_enter_container(), cbor_value_leave_container()
+ * \sa dkpf_cbor_value_at_end(), dkpf_cbor_value_advance_fixed(), dkpf_cbor_value_enter_container(), dkpf_cbor_value_leave_container()
  */
-CborError cbor_value_advance(CborValue *it)
+CborError dkpf_cbor_value_advance(CborValue *it)
 {
     cbor_assert(it->type != CborInvalidType);
     if (!it->remaining)
@@ -547,22 +547,22 @@ CborError cbor_value_advance(CborValue *it)
 }
 
 /**
- * \fn bool cbor_value_is_tag(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_tag(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR tag.
  *
- * \sa cbor_value_get_tag(), cbor_value_skip_tag()
+ * \sa dkpf_cbor_value_get_tag(), dkpf_cbor_value_skip_tag()
  */
 
 /**
- * \fn CborError cbor_value_get_tag(const CborValue *value, CborTag *result)
+ * \fn CborError dkpf_cbor_value_get_tag(const CborValue *value, CborTag *result)
  *
  * Retrieves the CBOR tag value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to a CBOR tag value, the
- * behavior is undefined, so checking with \ref cbor_value_get_type or with
- * \ref cbor_value_is_tag is recommended.
+ * behavior is undefined, so checking with \ref dkpf_cbor_value_get_type or with
+ * \ref dkpf_cbor_value_is_tag is recommended.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_tag()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_tag()
  */
 
 /**
@@ -572,12 +572,12 @@ CborError cbor_value_advance(CborValue *it)
  * This function does not run in constant time: it will run on O(n) for n being
  * the number of tags. It does use constant memory (O(1) memory requirements).
  *
- * \sa cbor_value_advance_fixed(), cbor_value_advance()
+ * \sa dkpf_cbor_value_advance_fixed(), dkpf_cbor_value_advance()
  */
-CborError cbor_value_skip_tag(CborValue *it)
+CborError dkpf_cbor_value_skip_tag(CborValue *it)
 {
-    while (cbor_value_is_tag(it)) {
-        CborError err = cbor_value_advance_fixed(it);
+    while (dkpf_cbor_value_is_tag(it)) {
+        CborError err = dkpf_cbor_value_advance_fixed(it);
         if (err)
             return err;
     }
@@ -585,7 +585,7 @@ CborError cbor_value_skip_tag(CborValue *it)
 }
 
 /**
- * \fn bool cbor_value_is_container(const CborValue *it)
+ * \fn bool dkpf_cbor_value_is_container(const CborValue *it)
  *
  * Returns true if the \a it value is a container and requires recursion in
  * order to decode (maps and arrays), false otherwise.
@@ -594,17 +594,17 @@ CborError cbor_value_skip_tag(CborValue *it)
 /**
  * Creates a CborValue iterator pointing to the first element of the container
  * represented by \a it and saves it in \a recursed. The \a it container object
- * needs to be kept and passed again to cbor_value_leave_container() in order
+ * needs to be kept and passed again to dkpf_cbor_value_leave_container() in order
  * to continue iterating past this container.
  *
  * The \a it CborValue iterator must point to a container.
  *
- * \sa cbor_value_is_container(), cbor_value_leave_container(), cbor_value_advance()
+ * \sa dkpf_cbor_value_is_container(), dkpf_cbor_value_leave_container(), dkpf_cbor_value_advance()
  */
-CborError cbor_value_enter_container(const CborValue *it, CborValue *recursed)
+CborError dkpf_cbor_value_enter_container(const CborValue *it, CborValue *recursed)
 {
     cbor_static_assert(CborIteratorFlag_ContainerIsMap == (CborMapType & ~CborArrayType));
-    cbor_assert(cbor_value_is_container(it));
+    cbor_assert(dkpf_cbor_value_is_container(it));
     *recursed = *it;
 
     if (it->flags & CborIteratorFlag_UnknownLength) {
@@ -643,18 +643,18 @@ CborError cbor_value_enter_container(const CborValue *it, CborValue *recursed)
 /**
  * Updates \a it to point to the next element after the container. The \a
  * recursed object needs to point to the element obtained either by advancing
- * the last element of the container (via cbor_value_advance(),
- * cbor_value_advance_fixed(), a nested cbor_value_leave_container(), or the \c
+ * the last element of the container (via dkpf_cbor_value_advance(),
+ * dkpf_cbor_value_advance_fixed(), a nested dkpf_cbor_value_leave_container(), or the \c
  * next pointer from cbor_value_copy_string() or cbor_value_dup_string()).
  *
  * The \a it and \a recursed parameters must be the exact same as passed to
- * cbor_value_enter_container().
+ * dkpf_cbor_value_enter_container().
  *
- * \sa cbor_value_enter_container(), cbor_value_at_end()
+ * \sa dkpf_cbor_value_enter_container(), dkpf_cbor_value_at_end()
  */
-CborError cbor_value_leave_container(CborValue *it, const CborValue *recursed)
+CborError dkpf_cbor_value_leave_container(CborValue *it, const CborValue *recursed)
 {
-    cbor_assert(cbor_value_is_container(it));
+    cbor_assert(dkpf_cbor_value_is_container(it));
     cbor_assert(recursed->type == CborInvalidType);
     it->ptr = recursed->ptr;
     return preparse_next_value(it);
@@ -662,182 +662,182 @@ CborError cbor_value_leave_container(CborValue *it, const CborValue *recursed)
 
 
 /**
- * \fn CborType cbor_value_get_type(const CborValue *value)
+ * \fn CborType dkpf_cbor_value_get_type(const CborValue *value)
  *
  * Returns the type of the CBOR value that the iterator \a value points to. If
  * \a value does not point to a valid value, this function returns \ref
  * CborInvalidType.
  *
  * TinyCBOR also provides functions to test directly if a given CborValue object
- * is of a given type, like cbor_value_is_text_string() and cbor_value_is_null().
+ * is of a given type, like dkpf_cbor_value_is_text_string() and dkpf_cbor_value_is_null().
  *
- * \sa cbor_value_is_valid()
+ * \sa dkpf_cbor_value_is_valid()
  */
 
 /**
- * \fn bool cbor_value_is_null(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_null(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR null type.
  *
- * \sa cbor_value_is_valid(), cbor_value_is_undefined()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_undefined()
  */
 
 /**
- * \fn bool cbor_value_is_undefined(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_undefined(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR undefined type.
  *
- * \sa cbor_value_is_valid(), cbor_value_is_null()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_null()
  */
 
 /**
- * \fn bool cbor_value_is_boolean(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_boolean(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR boolean
  * type (true or false).
  *
- * \sa cbor_value_is_valid(), cbor_value_get_boolean()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_get_boolean()
  */
 
 /**
- * \fn CborError cbor_value_get_boolean(const CborValue *value, bool *result)
+ * \fn CborError dkpf_cbor_value_get_boolean(const CborValue *value, bool *result)
  *
  * Retrieves the boolean value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to a boolean value, the
- * behavior is undefined, so checking with \ref cbor_value_get_type or with
- * \ref cbor_value_is_boolean is recommended.
+ * behavior is undefined, so checking with \ref dkpf_cbor_value_get_type or with
+ * \ref dkpf_cbor_value_is_boolean is recommended.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_boolean()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_boolean()
  */
 
 /**
- * \fn bool cbor_value_is_simple_type(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_simple_type(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR Simple Type
  * type (other than true, false, null and undefined).
  *
- * \sa cbor_value_is_valid(), cbor_value_get_simple_type()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_get_simple_type()
  */
 
 /**
- * \fn CborError cbor_value_get_simple_type(const CborValue *value, uint8_t *result)
+ * \fn CborError dkpf_cbor_value_get_simple_type(const CborValue *value, uint8_t *result)
  *
  * Retrieves the CBOR Simple Type value that \a value points to and stores it
  * in \a result. If the iterator \a value does not point to a simple_type
- * value, the behavior is undefined, so checking with \ref cbor_value_get_type
- * or with \ref cbor_value_is_simple_type is recommended.
+ * value, the behavior is undefined, so checking with \ref dkpf_cbor_value_get_type
+ * or with \ref dkpf_cbor_value_is_simple_type is recommended.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_simple_type()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_simple_type()
  */
 
 /**
- * \fn bool cbor_value_is_integer(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_integer(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR integer
  * type.
  *
- * \sa cbor_value_is_valid(), cbor_value_get_int, cbor_value_get_int64, cbor_value_get_uint64, cbor_value_get_raw_integer
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_get_int, dkpf_cbor_value_get_int64, dkpf_cbor_value_get_uint64, dkpf_cbor_value_get_raw_integer
  */
 
 /**
- * \fn bool cbor_value_is_unsigned_integer(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_unsigned_integer(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR unsigned
  * integer type (positive values or zero).
  *
- * \sa cbor_value_is_valid(), cbor_value_get_uint64()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_get_uint64()
  */
 
 /**
- * \fn bool cbor_value_is_negative_integer(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_negative_integer(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR negative
  * integer type.
  *
- * \sa cbor_value_is_valid(), cbor_value_get_int, cbor_value_get_int64, cbor_value_get_raw_integer
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_get_int, dkpf_cbor_value_get_int64, dkpf_cbor_value_get_raw_integer
  */
 
 /**
- * \fn CborError cbor_value_get_int(const CborValue *value, int *result)
+ * \fn CborError dkpf_cbor_value_get_int(const CborValue *value, int *result)
  *
  * Retrieves the CBOR integer value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to an integer value, the
- * behavior is undefined, so checking with \ref cbor_value_get_type or with
- * \ref cbor_value_is_integer is recommended.
+ * behavior is undefined, so checking with \ref dkpf_cbor_value_get_type or with
+ * \ref dkpf_cbor_value_is_integer is recommended.
  *
  * Note that this function does not do range-checking: integral values that do
  * not fit in a variable of type \c{int} are silently truncated to fit. Use
- * cbor_value_get_int_checked() if that is not acceptable.
+ * dkpf_cbor_value_get_int_checked() if that is not acceptable.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_integer()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_integer()
  */
 
 /**
- * \fn CborError cbor_value_get_int64(const CborValue *value, int64_t *result)
+ * \fn CborError dkpf_cbor_value_get_int64(const CborValue *value, int64_t *result)
  *
  * Retrieves the CBOR integer value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to an integer value, the
- * behavior is undefined, so checking with \ref cbor_value_get_type or with
- * \ref cbor_value_is_integer is recommended.
+ * behavior is undefined, so checking with \ref dkpf_cbor_value_get_type or with
+ * \ref dkpf_cbor_value_is_integer is recommended.
  *
  * Note that this function does not do range-checking: integral values that do
  * not fit in a variable of type \c{int64_t} are silently truncated to fit. Use
- * cbor_value_get_int64_checked() that is not acceptable.
+ * dkpf_cbor_value_get_int64_checked() that is not acceptable.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_integer()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_integer()
  */
 
 /**
- * \fn CborError cbor_value_get_uint64(const CborValue *value, uint64_t *result)
+ * \fn CborError dkpf_cbor_value_get_uint64(const CborValue *value, uint64_t *result)
  *
  * Retrieves the CBOR integer value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to an unsigned integer
- * value, the behavior is undefined, so checking with \ref cbor_value_get_type
- * or with \ref cbor_value_is_unsigned_integer is recommended.
+ * value, the behavior is undefined, so checking with \ref dkpf_cbor_value_get_type
+ * or with \ref dkpf_cbor_value_is_unsigned_integer is recommended.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_unsigned_integer()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_unsigned_integer()
  */
 
 /**
- * \fn CborError cbor_value_get_raw_integer(const CborValue *value, uint64_t *result)
+ * \fn CborError dkpf_cbor_value_get_raw_integer(const CborValue *value, uint64_t *result)
  *
  * Retrieves the CBOR integer value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to an integer value, the
- * behavior is undefined, so checking with \ref cbor_value_get_type or with
- * \ref cbor_value_is_integer is recommended.
+ * behavior is undefined, so checking with \ref dkpf_cbor_value_get_type or with
+ * \ref dkpf_cbor_value_is_integer is recommended.
  *
  * This function is provided because CBOR negative integers can assume values
  * that cannot be represented with normal 64-bit integer variables.
  *
- * If the integer is unsigned (that is, if cbor_value_is_unsigned_integer()
+ * If the integer is unsigned (that is, if dkpf_cbor_value_is_unsigned_integer()
  * returns true), then \a result will contain the actual value. If the integer
  * is negative, then \a result will contain the absolute value of that integer,
  * minus one. That is, \c {actual = -result - 1}. On architectures using two's
  * complement for representation of negative integers, it is equivalent to say
  * that \a result will contain the bitwise negation of the actual value.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_integer()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_integer()
  */
 
 /**
  * Retrieves the CBOR integer value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to an integer value, the
- * behavior is undefined, so checking with \ref cbor_value_get_type or with
- * \ref cbor_value_is_integer is recommended.
+ * behavior is undefined, so checking with \ref dkpf_cbor_value_get_type or with
+ * \ref dkpf_cbor_value_is_integer is recommended.
  *
- * Unlike \ref cbor_value_get_int64(), this function performs a check to see if the
+ * Unlike \ref dkpf_cbor_value_get_int64(), this function performs a check to see if the
  * stored integer fits in \a result without data loss. If the number is outside
  * the valid range for the data type, this function returns the recoverable
  * error CborErrorDataTooLarge. In that case, use either
- * cbor_value_get_uint64() (if the number is positive) or
- * cbor_value_get_raw_integer().
+ * dkpf_cbor_value_get_uint64() (if the number is positive) or
+ * dkpf_cbor_value_get_raw_integer().
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_integer(), cbor_value_get_int64()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_integer(), dkpf_cbor_value_get_int64()
  */
-CborError cbor_value_get_int64_checked(const CborValue *value, int64_t *result)
+CborError dkpf_cbor_value_get_int64_checked(const CborValue *value, int64_t *result)
 {
     uint64_t v;
-    cbor_assert(cbor_value_is_integer(value));
+    cbor_assert(dkpf_cbor_value_is_integer(value));
     v = _cbor_value_extract_int64_helper(value);
 
     /* Check before converting, as the standard says (C11 6.3.1.3 paragraph 3):
@@ -862,22 +862,22 @@ CborError cbor_value_get_int64_checked(const CborValue *value, int64_t *result)
 /**
  * Retrieves the CBOR integer value that \a value points to and stores it in \a
  * result. If the iterator \a value does not point to an integer value, the
- * behavior is undefined, so checking with \ref cbor_value_get_type or with
- * \ref cbor_value_is_integer is recommended.
+ * behavior is undefined, so checking with \ref dkpf_cbor_value_get_type or with
+ * \ref dkpf_cbor_value_is_integer is recommended.
  *
- * Unlike \ref cbor_value_get_int(), this function performs a check to see if the
+ * Unlike \ref dkpf_cbor_value_get_int(), this function performs a check to see if the
  * stored integer fits in \a result without data loss. If the number is outside
  * the valid range for the data type, this function returns the recoverable
  * error CborErrorDataTooLarge. In that case, use one of the other integer
  * functions to obtain the value.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_integer(), cbor_value_get_int64(),
- *     cbor_value_get_uint64(), cbor_value_get_int64_checked(), cbor_value_get_raw_integer()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_integer(), dkpf_cbor_value_get_int64(),
+ *     dkpf_cbor_value_get_uint64(), dkpf_cbor_value_get_int64_checked(), dkpf_cbor_value_get_raw_integer()
  */
-CborError cbor_value_get_int_checked(const CborValue *value, int *result)
+CborError dkpf_cbor_value_get_int_checked(const CborValue *value, int *result)
 {
     uint64_t v;
-    cbor_assert(cbor_value_is_integer(value));
+    cbor_assert(dkpf_cbor_value_is_integer(value));
     v = _cbor_value_extract_int64_helper(value);
 
     /* Check before converting, as the standard says (C11 6.3.1.3 paragraph 3):
@@ -907,7 +907,7 @@ CborError cbor_value_get_int_checked(const CborValue *value, int *result)
 }
 
 /**
- * \fn bool cbor_value_is_length_known(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_length_known(const CborValue *value)
  *
  * Returns true if the length of this type is known without calculation. That
  * is, if the length of this CBOR string, map or array is encoded in the data
@@ -915,32 +915,32 @@ CborError cbor_value_get_int_checked(const CborValue *value, int *result)
  * false.
  *
  * If the length is known, code can call cbor_value_get_string_length(),
- * cbor_value_get_array_length() or cbor_value_get_map_length() to obtain the
+ * dkpf_cbor_value_get_array_length() or dkpf_cbor_value_get_map_length() to obtain the
  * length. If the length is not known but is necessary, code can use the
- * cbor_value_calculate_string_length() function (no equivalent function is
+ * dkpf_cbor_value_calculate_string_length() function (no equivalent function is
  * provided for maps and arrays).
  */
 
 /**
- * \fn bool cbor_value_is_text_string(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_text_string(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR text
  * string. CBOR text strings are UTF-8 encoded and usually contain
  * human-readable text.
  *
- * \sa cbor_value_is_valid(), cbor_value_get_string_length(), cbor_value_calculate_string_length(),
- *     cbor_value_copy_text_string(), cbor_value_dup_text_string()
+ * \sa dkpf_cbor_value_is_valid(), cbor_value_get_string_length(), dkpf_cbor_value_calculate_string_length(),
+ *     dkpf_cbor_value_copy_text_string(), dkpf_cbor_value_dup_text_string()
  */
 
 /**
- * \fn bool cbor_value_is_byte_string(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_byte_string(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR text
  * string. CBOR byte strings are binary data with no specified encoding or
  * format.
  *
- * \sa cbor_value_is_valid(), cbor_value_get_string_length(), cbor_value_calculate_string_length(),
- *     cbor_value_copy_byte_string(), cbor_value_dup_byte_string()
+ * \sa dkpf_cbor_value_is_valid(), cbor_value_get_string_length(), dkpf_cbor_value_calculate_string_length(),
+ *     dkpf_cbor_value_copy_byte_string(), dkpf_cbor_value_dup_byte_string()
  */
 
 /**
@@ -949,30 +949,30 @@ CborError cbor_value_get_int_checked(const CborValue *value, int *result)
  * Extracts the length of the byte or text string that \a value points to and
  * stores it in \a result. If the iterator \a value does not point to a text
  * string or a byte string, the behaviour is undefined, so checking with \ref
- * cbor_value_get_type, with \ref cbor_value_is_text_string or \ref
- * cbor_value_is_byte_string is recommended.
+ * dkpf_cbor_value_get_type, with \ref dkpf_cbor_value_is_text_string or \ref
+ * dkpf_cbor_value_is_byte_string is recommended.
  *
  * If the length of this string is not encoded in the CBOR data stream, this
  * function will return the recoverable error CborErrorUnknownLength. You may
- * also check whether that is the case by using cbor_value_is_length_known().
+ * also check whether that is the case by using dkpf_cbor_value_is_length_known().
  *
  * If the length of the string is required but the length was not encoded, use
- * cbor_value_calculate_string_length(), but note that that function does not
+ * dkpf_cbor_value_calculate_string_length(), but note that that function does not
  * run in constant time.
  *
  * \note On 32-bit platforms, this function will return error condition of \ref
  * CborErrorDataTooLarge if the stream indicates a length that is too big to
  * fit in 32-bit.
  *
- * \sa cbor_value_is_valid(), cbor_value_is_length_known(), cbor_value_calculate_string_length()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_length_known(), dkpf_cbor_value_calculate_string_length()
  */
 
 /**
  * Calculates the length of the byte or text string that \a value points to and
  * stores it in \a len. If the iterator \a value does not point to a text
  * string or a byte string, the behaviour is undefined, so checking with \ref
- * cbor_value_get_type, with \ref cbor_value_is_text_string or \ref
- * cbor_value_is_byte_string is recommended.
+ * dkpf_cbor_value_get_type, with \ref dkpf_cbor_value_is_text_string or \ref
+ * dkpf_cbor_value_is_byte_string is recommended.
  *
  * This function is different from cbor_value_get_string_length() in that it
  * calculates the length even for strings sent in chunks. For that reason, this
@@ -983,17 +983,17 @@ CborError cbor_value_get_int_checked(const CborValue *value, int *result)
  * CborErrorDataTooLarge if the stream indicates a length that is too big to
  * fit in 32-bit.
  *
- * \sa cbor_value_get_string_length(), cbor_value_copy_text_string(), cbor_value_copy_byte_string(), cbor_value_is_length_known()
+ * \sa cbor_value_get_string_length(), dkpf_cbor_value_copy_text_string(), dkpf_cbor_value_copy_byte_string(), dkpf_cbor_value_is_length_known()
  */
-CborError cbor_value_calculate_string_length(const CborValue *value, size_t *len)
+CborError dkpf_cbor_value_calculate_string_length(const CborValue *value, size_t *length)
 {
-    *len = SIZE_MAX;
-    return _cbor_value_copy_string(value, NULL, len, NULL);
+    *length = SIZE_MAX;
+    return _cbor_value_copy_string(value, NULL, length, NULL);
 }
 
 static inline void prepare_string_iteration(CborValue *it)
 {
-    if (!cbor_value_is_length_known(it)) {
+    if (!dkpf_cbor_value_is_length_known(it)) {
         /* chunked string: we're before the first chunk;
          * advance to the first chunk */
         ++it->ptr;
@@ -1025,7 +1025,7 @@ static CborError get_string_chunk(CborValue *it, const void **bufferptr, size_t 
      */
     if (it->flags & CborIteratorFlag_IteratingStringChunks) {
         /* already iterating */
-        if (cbor_value_is_length_known(it)) {
+        if (dkpf_cbor_value_is_length_known(it)) {
             /* if the length was known, it wasn't chunked, so finish iteration */
             goto last_chunk;
         }
@@ -1104,7 +1104,7 @@ static CborError iterate_string_chunks(const CborValue *value, char *buffer, siz
     size_t total = 0;
     const void *ptr;
 
-    cbor_assert(cbor_value_is_byte_string(value) || cbor_value_is_text_string(value));
+    cbor_assert(dkpf_cbor_value_is_byte_string(value) || dkpf_cbor_value_is_text_string(value));
     if (!next)
         next = &tmp;
     *next = *value;
@@ -1140,20 +1140,20 @@ static CborError iterate_string_chunks(const CborValue *value, char *buffer, siz
 }
 
 /**
- * \fn CborError cbor_value_copy_text_string(const CborValue *value, char *buffer, size_t *buflen, CborValue *next)
+ * \fn CborError dkpf_cbor_value_copy_text_string(const CborValue *value, char *buffer, size_t *buflen, CborValue *next)
  *
  * Copies the string pointed to by \a value into the buffer provided at \a buffer
  * of \a buflen bytes. If \a buffer is a NULL pointer, this function will not
  * copy anything and will only update the \a next value.
  *
  * If the iterator \a value does not point to a text string, the behaviour is
- * undefined, so checking with \ref cbor_value_get_type or \ref
- * cbor_value_is_text_string is recommended.
+ * undefined, so checking with \ref dkpf_cbor_value_get_type or \ref
+ * dkpf_cbor_value_is_text_string is recommended.
  *
  * If the provided buffer length was too small, this function returns an error
  * condition of \ref CborErrorOutOfMemory. If you need to calculate the length
  * of the string in order to preallocate a buffer, use
- * cbor_value_calculate_string_length().
+ * dkpf_cbor_value_calculate_string_length().
  *
  * On success, this function sets the number of bytes copied to \c{*buflen}. If
  * the buffer is large enough, this function will insert a null byte after the
@@ -1173,24 +1173,24 @@ static CborError iterate_string_chunks(const CborValue *value, char *buffer, siz
  * \note This function does not perform UTF-8 validation on the incoming text
  * string.
  *
- * \sa cbor_value_get_text_string_chunk() cbor_value_dup_text_string(), cbor_value_copy_byte_string(), cbor_value_get_string_length(), cbor_value_calculate_string_length()
+ * \sa cbor_value_get_text_string_chunk() dkpf_cbor_value_dup_text_string(), dkpf_cbor_value_copy_byte_string(), cbor_value_get_string_length(), dkpf_cbor_value_calculate_string_length()
  */
 
 /**
- * \fn CborError cbor_value_copy_byte_string(const CborValue *value, uint8_t *buffer, size_t *buflen, CborValue *next)
+ * \fn CborError dkpf_cbor_value_copy_byte_string(const CborValue *value, uint8_t *buffer, size_t *buflen, CborValue *next)
  *
  * Copies the string pointed by \a value into the buffer provided at \a buffer
  * of \a buflen bytes. If \a buffer is a NULL pointer, this function will not
  * copy anything and will only update the \a next value.
  *
  * If the iterator \a value does not point to a byte string, the behaviour is
- * undefined, so checking with \ref cbor_value_get_type or \ref
- * cbor_value_is_byte_string is recommended.
+ * undefined, so checking with \ref dkpf_cbor_value_get_type or \ref
+ * dkpf_cbor_value_is_byte_string is recommended.
  *
  * If the provided buffer length was too small, this function returns an error
  * condition of \ref CborErrorOutOfMemory. If you need to calculate the length
  * of the string in order to preallocate a buffer, use
- * cbor_value_calculate_string_length().
+ * dkpf_cbor_value_calculate_string_length().
  *
  * On success, this function sets the number of bytes copied to \c{*buflen}. If
  * the buffer is large enough, this function will insert a null byte after the
@@ -1204,7 +1204,7 @@ static CborError iterate_string_chunks(const CborValue *value, char *buffer, siz
  * This function may not run in constant time (it will run in O(n) time on the
  * number of chunks). It requires constant memory (O(1)).
  *
- * \sa cbor_value_get_byte_string_chunk(), cbor_value_dup_text_string(), cbor_value_copy_text_string(), cbor_value_get_string_length(), cbor_value_calculate_string_length()
+ * \sa cbor_value_get_byte_string_chunk(), dkpf_cbor_value_dup_text_string(), dkpf_cbor_value_copy_text_string(), cbor_value_get_string_length(), dkpf_cbor_value_calculate_string_length()
  */
 
 CborError _cbor_value_copy_string(const CborValue *value, void *buffer,
@@ -1233,16 +1233,16 @@ CborError _cbor_value_copy_string(const CborValue *value, void *buffer,
  * This function may not run in constant time (it will run in O(n) time on the
  * number of chunks). It requires constant memory (O(1)).
  *
- * \sa cbor_value_skip_tag(), cbor_value_copy_text_string()
+ * \sa dkpf_cbor_value_skip_tag(), dkpf_cbor_value_copy_text_string()
  */
-CborError cbor_value_text_string_equals(const CborValue *value, const char *string, bool *result)
+CborError dkpf_cbor_value_text_string_equals(const CborValue *value, const char *string, bool *result)
 {
     size_t len;
     CborValue copy = *value;
-    CborError err = cbor_value_skip_tag(&copy);
+    CborError err = dkpf_cbor_value_skip_tag(&copy);
     if (err)
         return err;
-    if (!cbor_value_is_text_string(&copy)) {
+    if (!dkpf_cbor_value_is_text_string(&copy)) {
         *result = false;
         return CborNoError;
     }
@@ -1252,92 +1252,92 @@ CborError cbor_value_text_string_equals(const CborValue *value, const char *stri
 }
 
 /**
- * \fn bool cbor_value_is_array(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_array(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR array.
  *
- * \sa cbor_value_is_valid(), cbor_value_is_map()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_map()
  */
 
 /**
- * \fn CborError cbor_value_get_array_length(const CborValue *value, size_t *length)
+ * \fn CborError dkpf_cbor_value_get_array_length(const CborValue *value, size_t *length)
  *
  * Extracts the length of the CBOR array that \a value points to and stores it
  * in \a result. If the iterator \a value does not point to a CBOR array, the
- * behaviour is undefined, so checking with \ref cbor_value_get_type or \ref
- * cbor_value_is_array is recommended.
+ * behaviour is undefined, so checking with \ref dkpf_cbor_value_get_type or \ref
+ * dkpf_cbor_value_is_array is recommended.
  *
  * If the length of this array is not encoded in the CBOR data stream, this
  * function will return the recoverable error CborErrorUnknownLength. You may
- * also check whether that is the case by using cbor_value_is_length_known().
+ * also check whether that is the case by using dkpf_cbor_value_is_length_known().
  *
  * \note On 32-bit platforms, this function will return error condition of \ref
  * CborErrorDataTooLarge if the stream indicates a length that is too big to
  * fit in 32-bit.
  *
- * \sa cbor_value_is_valid(), cbor_value_is_length_known()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_length_known()
  */
 
 /**
- * \fn bool cbor_value_is_map(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_map(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR map.
  *
- * \sa cbor_value_is_valid(), cbor_value_is_array()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_array()
  */
 
 /**
- * \fn CborError cbor_value_get_map_length(const CborValue *value, size_t *length)
+ * \fn CborError dkpf_cbor_value_get_map_length(const CborValue *value, size_t *length)
  *
  * Extracts the length of the CBOR map that \a value points to and stores it in
  * \a result. If the iterator \a value does not point to a CBOR map, the
- * behaviour is undefined, so checking with \ref cbor_value_get_type or \ref
- * cbor_value_is_map is recommended.
+ * behaviour is undefined, so checking with \ref dkpf_cbor_value_get_type or \ref
+ * dkpf_cbor_value_is_map is recommended.
  *
  * If the length of this map is not encoded in the CBOR data stream, this
  * function will return the recoverable error CborErrorUnknownLength. You may
- * also check whether that is the case by using cbor_value_is_length_known().
+ * also check whether that is the case by using dkpf_cbor_value_is_length_known().
  *
  * \note On 32-bit platforms, this function will return error condition of \ref
  * CborErrorDataTooLarge if the stream indicates a length that is too big to
  * fit in 32-bit.
  *
- * \sa cbor_value_is_valid(), cbor_value_is_length_known()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_length_known()
  */
 
 /**
  * Attempts to find the value in map \a map that corresponds to the text string
  * entry \a string. If the iterator \a value does not point to a CBOR map, the
- * behaviour is undefined, so checking with \ref cbor_value_get_type or \ref
- * cbor_value_is_map is recommended.
+ * behaviour is undefined, so checking with \ref dkpf_cbor_value_get_type or \ref
+ * dkpf_cbor_value_is_map is recommended.
  *
  * If the item is found, it is stored in \a result. If no item is found
  * matching the key, then \a result will contain an element of type \ref
  * CborInvalidType. Matching is performed using
- * cbor_value_text_string_equals(), so tagged strings will also match.
+ * dkpf_cbor_value_text_string_equals(), so tagged strings will also match.
  *
  * This function has a time complexity of O(n) where n is the number of
  * elements in the map to be searched. In addition, this function is has O(n)
  * memory requirement based on the number of nested containers (maps or arrays)
  * found as elements of this map.
  *
- * \sa cbor_value_is_valid(), cbor_value_text_string_equals(), cbor_value_advance()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_text_string_equals(), dkpf_cbor_value_advance()
  */
-CborError cbor_value_map_find_value(const CborValue *map, const char *string, CborValue *element)
+CborError dkpf_cbor_value_map_find_value(const CborValue *map, const char *string, CborValue *element)
 {
     CborError err;
     size_t len = strlen(string);
-    cbor_assert(cbor_value_is_map(map));
-    err = cbor_value_enter_container(map, element);
+    cbor_assert(dkpf_cbor_value_is_map(map));
+    err = dkpf_cbor_value_enter_container(map, element);
     if (err)
         goto error;
 
-    while (!cbor_value_at_end(element)) {
+    while (!dkpf_cbor_value_at_end(element)) {
         /* find the non-tag so we can compare */
-        err = cbor_value_skip_tag(element);
+        err = dkpf_cbor_value_skip_tag(element);
         if (err)
             goto error;
-        if (cbor_value_is_text_string(element)) {
+        if (dkpf_cbor_value_is_text_string(element)) {
             bool equals;
             size_t dummyLen = len;
             err = iterate_string_chunks(element, CONST_CAST(char *, string), &dummyLen,
@@ -1348,16 +1348,16 @@ CborError cbor_value_map_find_value(const CborValue *map, const char *string, Cb
                 return preparse_value(element);
         } else {
             /* skip this key */
-            err = cbor_value_advance(element);
+            err = dkpf_cbor_value_advance(element);
             if (err)
                 goto error;
         }
 
         /* skip this value */
-        err = cbor_value_skip_tag(element);
+        err = dkpf_cbor_value_skip_tag(element);
         if (err)
             goto error;
-        err = cbor_value_advance(element);
+        err = dkpf_cbor_value_advance(element);
         if (err)
             goto error;
     }
@@ -1372,73 +1372,73 @@ error:
 }
 
 /**
- * \fn bool cbor_value_is_float(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_float(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR
  * single-precision floating point (32-bit).
  *
- * \sa cbor_value_is_valid(), cbor_value_is_double(), cbor_value_is_half_float()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_double(), dkpf_cbor_value_is_half_float()
  */
 
 /**
- * \fn CborError cbor_value_get_float(const CborValue *value, float *result)
+ * \fn CborError dkpf_cbor_value_get_float(const CborValue *value, float *result)
  *
  * Retrieves the CBOR single-precision floating point (32-bit) value that \a
  * value points to and stores it in \a result. If the iterator \a value does
  * not point to a single-precision floating point value, the behavior is
- * undefined, so checking with \ref cbor_value_get_type or with \ref
- * cbor_value_is_float is recommended.
+ * undefined, so checking with \ref dkpf_cbor_value_get_type or with \ref
+ * dkpf_cbor_value_is_float is recommended.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_float(), cbor_value_get_double()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_float(), dkpf_cbor_value_get_double()
  */
 
 /**
- * \fn bool cbor_value_is_double(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_double(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR
  * double-precision floating point (64-bit).
  *
- * \sa cbor_value_is_valid(), cbor_value_is_float(), cbor_value_is_half_float()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_float(), dkpf_cbor_value_is_half_float()
  */
 
 /**
- * \fn CborError cbor_value_get_double(const CborValue *value, float *result)
+ * \fn CborError dkpf_cbor_value_get_double(const CborValue *value, float *result)
  *
  * Retrieves the CBOR double-precision floating point (64-bit) value that \a
  * value points to and stores it in \a result. If the iterator \a value does
  * not point to a double-precision floating point value, the behavior is
- * undefined, so checking with \ref cbor_value_get_type or with \ref
- * cbor_value_is_double is recommended.
+ * undefined, so checking with \ref dkpf_cbor_value_get_type or with \ref
+ * dkpf_cbor_value_is_double is recommended.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_double(), cbor_value_get_float()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_double(), dkpf_cbor_value_get_float()
  */
 
 /**
- * \fn bool cbor_value_is_half_float(const CborValue *value)
+ * \fn bool dkpf_cbor_value_is_half_float(const CborValue *value)
  *
  * Returns true if the iterator \a value is valid and points to a CBOR
  * single-precision floating point (16-bit).
  *
- * \sa cbor_value_is_valid(), cbor_value_is_double(), cbor_value_is_float()
+ * \sa dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_double(), dkpf_cbor_value_is_float()
  */
 
 /**
  * Retrieves the CBOR half-precision floating point (16-bit) value that \a
  * value points to and stores it in \a result. If the iterator \a value does
  * not point to a half-precision floating point value, the behavior is
- * undefined, so checking with \ref cbor_value_get_type or with \ref
- * cbor_value_is_half_float is recommended.
+ * undefined, so checking with \ref dkpf_cbor_value_get_type or with \ref
+ * dkpf_cbor_value_is_half_float is recommended.
  *
  * Note: since the C language does not have a standard type for half-precision
  * floating point, this function takes a \c{void *} as a parameter for the
  * storage area, which must be at least 16 bits wide.
  *
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_half_float(), cbor_value_get_float()
+ * \sa dkpf_cbor_value_get_type(), dkpf_cbor_value_is_valid(), dkpf_cbor_value_is_half_float(), dkpf_cbor_value_get_float()
  */
-CborError cbor_value_get_half_float(const CborValue *value, void *result)
+CborError dkpf_cbor_value_get_half_float(const CborValue *value, void *result)
 {
     uint16_t v;
-    cbor_assert(cbor_value_is_half_float(value));
+    cbor_assert(dkpf_cbor_value_is_half_float(value));
 
     /* size has been computed already */
     v = get16(value->ptr + 1);

@@ -654,7 +654,7 @@ static CborError validate_value(CborValue *it, uint32_t flags, int recursionLeft
  *
  * \sa CborValidationFlags, cbor_value_validate_basic(), cbor_value_advance()
  */
-CborError cbor_value_validate(const CborValue *it, uint32_t flags)
+CborError dkpf_cbor_value_validate(const CborValue *it, uint32_t flags)
 {
     CborValue value = *it;
     CborError err = validate_value(&value, flags, CBOR_PARSER_MAX_RECURSIONS);

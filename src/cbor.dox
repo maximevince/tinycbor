@@ -67,7 +67,7 @@
  *
  * This variable is a constant used to indicate that the length of the map or
  * array is not yet determined. It is used in functions
- * cbor_encoder_create_map() and cbor_encoder_create_array()
+ * dkpf_cbor_encoder_create_map() and dkpf_cbor_encoder_create_array()
  */
 
 /**

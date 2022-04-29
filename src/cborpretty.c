@@ -64,7 +64,7 @@
  * remain stable. A future update of TinyCBOR may produce different output for
  * the same input and parsers may be unable to handle it.
  *
- * \sa CborParsing, CborToJson, cbor_parser_init()
+ * \sa CborParsing, CborToJson, dkpf_cbor_parser_init()
  */
 
 /**
@@ -317,7 +317,7 @@ static CborError container_to_pretty(CborStreamFunction stream, void *out, CborV
         return err;     /* do allow the dumping to continue */
     }
 
-    while (!cbor_value_at_end(it) && !err) {
+    while (!dkpf_cbor_value_at_end(it) && !err) {
         err = stream(out, "%s", comma);
         comma = ", ";
 
@@ -339,7 +339,7 @@ static CborError container_to_pretty(CborStreamFunction stream, void *out, CborV
 static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue *it, int flags, int recursionsLeft)
 {
     CborError err = CborNoError;
-    CborType type = cbor_value_get_type(it);
+    CborType type = dkpf_cbor_value_get_type(it);
     switch (type) {
     case CborArrayType:
     case CborMapType: {
@@ -352,7 +352,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
         if (err)
             return err;
 
-        err = cbor_value_enter_container(it, &recursed);
+        err = dkpf_cbor_value_enter_container(it, &recursed);
         if (err) {
             it->ptr = recursed.ptr;
             return err;       /* parse error */
@@ -362,7 +362,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
             it->ptr = recursed.ptr;
             return err;       /* parse error */
         }
-        err = cbor_value_leave_container(it, &recursed);
+        err = dkpf_cbor_value_leave_container(it, &recursed);
         if (err)
             return err;       /* parse error */
 
@@ -371,9 +371,9 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
 
     case CborIntegerType: {
         uint64_t val;
-        cbor_value_get_raw_integer(it, &val);    /* can't fail */
+        dkpf_cbor_value_get_raw_integer(it, &val);    /* can't fail */
 
-        if (cbor_value_is_unsigned_integer(it)) {
+        if (dkpf_cbor_value_is_unsigned_integer(it)) {
             err = stream(out, "%" PRIu64, val);
         } else {
             /* CBOR stores the negative number X as -1 - X
@@ -396,7 +396,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
     case CborTextStringType: {
         size_t n = 0;
         const void *ptr;
-        bool showingFragments = (flags & CborPrettyShowStringFragments) && !cbor_value_is_length_known(it);
+        bool showingFragments = (flags & CborPrettyShowStringFragments) && !dkpf_cbor_value_is_length_known(it);
         const char *separator = "";
         char close = '\'';
         char open[3] = "h'";
@@ -450,10 +450,10 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
 
     case CborTagType: {
         CborTag tag;
-        cbor_value_get_tag(it, &tag);       /* can't fail */
+        dkpf_cbor_value_get_tag(it, &tag);       /* can't fail */
         err = stream(out, "%" PRIu64 "%s(", tag, get_indicator(it, flags));
         if (!err)
-            err = cbor_value_advance_fixed(it);
+            err = dkpf_cbor_value_advance_fixed(it);
         if (!err && recursionsLeft)
             err = value_to_pretty(stream, out, it, flags, recursionsLeft - 1);
         else if (!err)
@@ -466,7 +466,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
     case CborSimpleType: {
         /* simple types can't fail and can't have overlong encoding */
         uint8_t simple_type;
-        cbor_value_get_simple_type(it, &simple_type);
+        dkpf_cbor_value_get_simple_type(it, &simple_type);
         err = stream(out, "simple(%" PRIu8 ")", simple_type);
         break;
     }
@@ -481,7 +481,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
 
     case CborBooleanType: {
         bool val;
-        cbor_value_get_boolean(it, &val);       /* can't fail */
+        dkpf_cbor_value_get_boolean(it, &val);       /* can't fail */
         err = stream(out, val ? "true" : "false");
         break;
     }
@@ -496,14 +496,14 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
         if (false) {
             float f;
     case CborFloatType:
-            cbor_value_get_float(it, &f);
+            dpkf_cbor_value_get_float(it, &f);
             val = f;
             suffix = flags & CborPrettyNumericEncodingIndicators ? "_2" : "f";
         } else if (false) {
             uint16_t f16;
     case CborHalfFloatType:
 #ifndef CBOR_NO_HALF_FLOAT_TYPE
-            cbor_value_get_half_float(it, &f16);
+            dkpf_cbor_value_get_half_float(it, &f16);
             val = decode_half(f16);
             suffix = flags & CborPrettyNumericEncodingIndicators ? "_1" : "f16";
 #else
@@ -548,7 +548,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
     }
 
     if (!err)
-        err = cbor_value_advance_fixed(it);
+        err = dkpf_cbor_value_advance_fixed(it);
     return err;
 }
 
@@ -570,9 +570,9 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
  * first parameter and a printf-style format string as the second, with a variable
  * number of further parameters.
  *
- * \sa cbor_value_to_pretty(), cbor_value_to_json_advance()
+ * \sa dkpf_cbor_value_to_pretty(), cbor_value_to_json_advance()
  */
-CborError cbor_value_to_pretty_stream(CborStreamFunction streamFunction, void *token, CborValue *value, int flags)
+CborError dkpf_cbor_value_to_pretty_stream(CborStreamFunction streamFunction, void *token, CborValue *value, int flags)
 {
     return value_to_pretty(streamFunction, token, value, flags, CBOR_PARSER_MAX_RECURSIONS);
 }
