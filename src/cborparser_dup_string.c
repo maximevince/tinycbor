@@ -34,6 +34,7 @@
 
 #include "cbor.h"
 #include "compilersupport_p.h"
+#include "vk_malloc.h"
 #include <stdlib.h>
 
 /**
@@ -105,14 +106,14 @@ CborError _dkpf_cbor_value_dup_string(const CborValue *value, void **buffer, siz
         return err;
 
     ++*buflen;
-    *buffer = malloc(*buflen);
+    *buffer = VK_MALLOC(*buflen);
     if (!*buffer) {
         /* out of memory */
         return CborErrorOutOfMemory;
     }
     err = _dkpf_cbor_value_copy_string(value, *buffer, buflen, next);
     if (err) {
-        free(*buffer);
+        VK_FREE(*buffer);
         return err;
     }
     return CborNoError;
