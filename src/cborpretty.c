@@ -496,7 +496,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
         if (false) {
             float f;
     case CborFloatType:
-            dpkf_cbor_value_get_float(it, &f);
+            dkpf_cbor_value_get_float(it, &f);
             val = f;
             suffix = flags & CborPrettyNumericEncodingIndicators ? "_2" : "f";
         } else if (false) {
@@ -512,7 +512,7 @@ static CborError value_to_pretty(CborStreamFunction stream, void *out, CborValue
             break;
 #endif
         } else {
-            cbor_value_get_double(it, &val);
+            dkpf_cbor_value_get_double(it, &val);
             suffix = "";
         }
 

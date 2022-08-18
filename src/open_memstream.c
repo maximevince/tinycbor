@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "vk_malloc.h"
+
 #if defined(__unix__) || defined(__APPLE__)
 #  include <unistd.h>
 #endif
@@ -84,13 +86,13 @@ static int close_buffer(void *cookie)
     struct Buffer *b = (struct Buffer *)cookie;
     if (*b->ptr)
         (*b->ptr)[*b->len] = '\0';
-    free(b);
+    VK_FREE(b);
     return 0;
 }
 
 FILE *open_memstream(char **bufptr, size_t *lenptr)
 {
-    struct Buffer *b = (struct Buffer *)malloc(sizeof(struct Buffer));
+    struct Buffer *b = (struct Buffer *)VK_MALLOC(sizeof(struct Buffer));
     if (b == NULL)
         return NULL;
     b->alloc = 0;

@@ -37,6 +37,8 @@
 #include "vk_malloc.h"
 #include <stdlib.h>
 
+#include "vk_malloc.h"
+
 /**
  * \fn CborError dkpf_cbor_value_dup_text_string(const CborValue *value, char **buffer, size_t *buflen, CborValue *next)
  *
